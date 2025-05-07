@@ -1,7 +1,6 @@
 import { create } from "zustand"
 import { devtools } from "zustand/middleware"
 
-// Define the types for our tags and suggestions
 export type TagType = {
   id: string
   name: string
