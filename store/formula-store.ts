@@ -24,7 +24,6 @@ interface FormulaState {
   showSuggestions: boolean
   result: number | null
 
-  // Actions
   setItems: (items: FormulaItem[]) => void
   addItem: (item: FormulaItem, index?: number) => void
   removeItem: (index: number) => void
@@ -38,7 +37,6 @@ interface FormulaState {
   calculateResult: () => void
 }
 
-// Parse value to number for calculation
 const parseValue = (value: string | number): number => {
   if (typeof value === "number") {
     return value
@@ -46,15 +44,13 @@ const parseValue = (value: string | number): number => {
 
   if (typeof value === "string") {
     try {
-      // First check if it's a simple number
       const simpleNumber = Number(value)
       if (!isNaN(simpleNumber)) {
         return simpleNumber
       }
 
-      // If it contains math operators, try to evaluate it
       if (/[+\-*/()]/.test(value)) {
-        // eslint-disable-next-line no-eval
+
         return eval(value)
       }
     } catch (e) {
@@ -82,23 +78,19 @@ export const useFormulaStore = create<FormulaState>()(
         const { items, activeIndex } = get()
         const newItems = [...items]
 
-        // If index is provided, insert at that index
         if (index !== undefined) {
           newItems.splice(index, 0, item)
           set({ items: newItems, activeIndex: index + 1 })
         }
-        // If activeIndex is set, insert at that position
         else if (activeIndex !== null) {
           newItems.splice(activeIndex, 0, item)
           set({ items: newItems, activeIndex: activeIndex + 1 })
         }
-        // Otherwise, append to the end
         else {
           newItems.push(item)
           set({ items: newItems, activeIndex: newItems.length })
         }
 
-        // Calculate the result after adding an item
         get().calculateResult()
       },
 
@@ -107,7 +99,6 @@ export const useFormulaStore = create<FormulaState>()(
         const newItems = [...items]
         newItems.splice(index, 1)
 
-        // Adjust activeIndex if needed
         let newActiveIndex = activeIndex
         if (activeIndex !== null && activeIndex > index) {
           newActiveIndex = activeIndex - 1
@@ -136,35 +127,31 @@ export const useFormulaStore = create<FormulaState>()(
         const { items } = get()
 
         try {
-          // Convert formula items to a calculable expression
           let expression = ""
 
           items.forEach((item) => {
             if (item.type === "tag") {
-              // Parse the value from the tag
               expression += parseValue(item.tag.value)
             } else if (item.type === "operator") {
-              // Replace ^ with ** for exponentiation
               if (item.operator === "^") {
                 expression += "**"
               } else {
                 expression += item.operator
               }
             } else if (item.type === "text") {
-              // Try to parse numbers from text
               const num = Number.parseFloat(item.text)
               if (!isNaN(num)) {
                 expression += num
               }
             } else if (item.type === "number") {
-              // Directly use the number value
+              
               expression += item.value
             }
           })
 
-          // Only evaluate if we have a valid expression
+          
           if (expression) {
-            // eslint-disable-next-line no-eval
+            
             const calculatedResult = eval(expression)
             set({ result: calculatedResult })
           } else {
