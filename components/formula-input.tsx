@@ -7,7 +7,6 @@ import { useSuggestions } from "@/hooks/use-suggestions"
 import { useFormulaStore, type TagType } from "@/store/formula-store"
 
 export default function FormulaInput() {
-  // Get state and actions from Zustand store
   const {
     items,
     activeIndex,
@@ -28,7 +27,6 @@ export default function FormulaInput() {
     calculateResult,
   } = useFormulaStore()
 
-  // Fetch suggestions using React Query
   const { data: suggestions = [], isLoading, error } = useSuggestions(inputValue, showSuggestions)
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -37,24 +35,21 @@ export default function FormulaInput() {
   const formulaContainerRef = useRef<HTMLDivElement>(null)
   const itemsRef = useRef<(HTMLDivElement | null )[]>([])
 
-  // Handle input change
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)
     setShowSuggestions(true)
   }
 
-  // Handle inline input change
   const handleInlineInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInlineText(e.target.value)
   }
 
-  // Handle selecting a suggestion
   const handleSelectSuggestion = (suggestion: TagType) => {
     addItem({ type: "tag", tag: suggestion })
     setInputValue("")
     setShowSuggestions(false)
 
-    // Focus back on input after selection
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus()
