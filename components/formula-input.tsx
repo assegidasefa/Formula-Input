@@ -57,47 +57,47 @@ export default function FormulaInput() {
     }, 0)
   }
 
-  // Handle key press in the input
+ 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    // Handle left arrow to move cursor left
+    
     if (e.key === "ArrowLeft" && activeIndex !== null && activeIndex > 0) {
       e.preventDefault()
       setActiveIndex(activeIndex - 1)
       return
     }
 
-    // Handle right arrow to move cursor right
+   
     if (e.key === "ArrowRight" && activeIndex !== null && activeIndex < items.length) {
       e.preventDefault()
       setActiveIndex(activeIndex + 1)
       return
     }
 
-    // Handle operators
+   
     if (["+", "-", "*", "/", "(", ")", "^"].includes(e.key)) {
       e.preventDefault()
       addItem({ type: "operator", operator: e.key })
       return
     }
 
-    // Handle numbers - add them directly as number items
+    
     if (/^[0-9]$/.test(e.key)) {
-      // If the input is empty, add the number as a new item
+      
       if (!inputValue) {
         e.preventDefault()
         const numberValue = Number.parseInt(e.key, 10)
         addItem({ type: "number", value: numberValue })
         return
       }
-      // Otherwise, let the number be added to the input value
+      
       return
     }
 
-    // Handle space to convert input to text
+    
     if (e.key === " " && inputValue.trim()) {
       e.preventDefault()
 
-      // Check if input is a number
+      
       const num = Number(inputValue.trim())
       const isNumber = !isNaN(num)
 
@@ -111,14 +111,14 @@ export default function FormulaInput() {
       return
     }
 
-    // Handle Enter to add current input as text or select first suggestion
+    
     if (e.key === "Enter") {
       e.preventDefault()
 
       if (showSuggestions && suggestions.length > 0) {
         handleSelectSuggestion(suggestions[0])
       } else if (inputValue.trim()) {
-        // Check if input is a number
+       
         const num = Number(inputValue.trim())
         const isNumber = !isNaN(num)
 
@@ -133,7 +133,7 @@ export default function FormulaInput() {
       return
     }
 
-    // Handle backspace to delete items
+    
     if (e.key === "Backspace" && !inputValue) {
       e.preventDefault()
       if (items.length > 0 && activeIndex !== null && activeIndex > 0) {
@@ -144,7 +144,7 @@ export default function FormulaInput() {
     }
   }
 
-  // Handle inline input key press
+  
   const handleInlineKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Enter") {
       e.preventDefault()
@@ -155,12 +155,12 @@ export default function FormulaInput() {
     }
   }
 
-  // Start inline editing
+  
   const startInlineEdit = (index: number, initialText = "") => {
     setInlineEditIndex(index)
     setInlineText(initialText)
 
-    // Focus the inline input after it's rendered
+    
     setTimeout(() => {
       if (inlineInputRef.current) {
         inlineInputRef.current.focus()
@@ -168,10 +168,10 @@ export default function FormulaInput() {
     }, 0)
   }
 
-  // Commit inline edit
+  
   const commitInlineEdit = (index: number) => {
     if (inlineText.trim()) {
-      // Check if the edited text is a number
+      
       const num = Number(inlineText.trim())
       const isNumber = !isNaN(num)
 
@@ -181,7 +181,7 @@ export default function FormulaInput() {
         updateItem(index, { type: "text", text: inlineText.trim() })
       }
     } else {
-      // If the text is empty, remove the item
+      
       removeItem(index)
     }
 
@@ -189,24 +189,24 @@ export default function FormulaInput() {
     setInlineText("")
   }
 
-  // Cancel inline edit
+  
   const cancelInlineEdit = () => {
     setInlineEditIndex(null)
     setInlineText("")
   }
 
-  // Handle click on the formula container to determine cursor position
+ 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!formulaContainerRef.current) return
 
-    // Don't handle clicks on items, only on the container
+   
     if ((e.target as HTMLElement).closest(".formula-item")) return
 
     const containerRect = formulaContainerRef.current.getBoundingClientRect()
     const clickX = e.clientX - containerRect.left
 
-    // Find the closest item to the click position
-    let closestIndex = items.length // Default to end
+    
+    let closestIndex = items.length 
     let closestDistance = Number.POSITIVE_INFINITY
 
     itemsRef.current.forEach((itemRef, index) => {
@@ -215,7 +215,7 @@ export default function FormulaInput() {
       const itemRect = itemRef.getBoundingClientRect()
       const itemCenterX = itemRect.left + itemRect.width / 2 - containerRect.left
 
-      // Check if click is before this item
+      
       if (clickX < itemCenterX) {
         const distance = Math.abs(clickX - (itemRect.left - containerRect.left))
         if (distance < closestDistance) {
@@ -224,7 +224,7 @@ export default function FormulaInput() {
         }
       }
 
-      // Check if click is after this item
+      
       if (clickX >= itemCenterX && index === items.length - 1) {
         const distance = Math.abs(clickX - (itemRect.right - containerRect.left))
         if (distance < closestDistance) {
@@ -234,16 +234,16 @@ export default function FormulaInput() {
       }
     })
 
-    // Set the active index to the closest position
+    
     setActiveIndex(closestIndex)
 
-    // Focus the input
+    
     if (inputRef.current) {
       inputRef.current.focus()
     }
   }
 
-  // Close suggestions when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -262,31 +262,31 @@ export default function FormulaInput() {
     }
   }, [setShowSuggestions])
 
-  // Set initial active index when component mounts
+  
   useEffect(() => {
     if (activeIndex === null && items.length >= 0) {
       setActiveIndex(items.length)
     }
   }, [activeIndex, items.length, setActiveIndex])
 
-  // Handle clicking on a position between items
+  
   const handlePositionClick = (index: number, e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent container click handler from firing
+    e.stopPropagation() 
     setActiveIndex(index)
     if (inputRef.current) {
       inputRef.current.focus()
     }
   }
 
-  // Handle double-clicking on a text item to edit it
+  
   const handleTextDoubleClick = (index: number, text: string, e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent container click handler from firing
+    e.stopPropagation() 
     startInlineEdit(index, text)
   }
 
-  // Render the icon for a tag
+  
   const renderIcon = (category: string) => {
-    // Map category to icon
+    
     if (category.toLowerCase().includes("date") || category.toLowerCase().includes("month")) {
       return <Calendar className="h-4 w-4 mr-1" />
     } else {
@@ -294,7 +294,7 @@ export default function FormulaInput() {
     }
   }
 
-  // Get color based on category
+  
   const getTagColor = (category: string): string => {
     if (category.toLowerCase().includes("date") || category.toLowerCase().includes("month")) {
       return "text-purple-500"
@@ -317,7 +317,7 @@ export default function FormulaInput() {
 
           <div className="flex flex-wrap items-center flex-1 gap-1">
             {items.map((item, index) => {
-              // Add a click handler for the position before this item
+              
               const positionClickHandler = (e: React.MouseEvent) => handlePositionClick(index, e)
 
               return (
@@ -414,7 +414,7 @@ export default function FormulaInput() {
               )
             })}
 
-            {/* Show cursor position at the end */}
+            
             <div
               className="w-1 h-4 cursor-text"
               onClick={(e) => handlePositionClick(items.length, e)}
@@ -443,7 +443,7 @@ export default function FormulaInput() {
           </div>
         </div>
 
-        {/* Suggestions dropdown */}
+       
         {showSuggestions && (
           <div
             ref={suggestionsRef}
@@ -478,7 +478,7 @@ export default function FormulaInput() {
         )}
       </div>
 
-      {/* Display calculation result */}
+      
       {result !== null && (
         <div className="mt-4 p-2 bg-gray-50 rounded-md">
           <p className="text-sm text-gray-700">
