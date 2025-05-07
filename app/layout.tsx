@@ -6,7 +6,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Formula Input Demo",
   description: "A formula input component with tags and operations",
-    generator: 'v0.dev'
+    generator: 'asse-dev'
 }
 
 export default function RootLayout({
